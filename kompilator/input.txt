@@ -1,0 +1,11 @@
+# Binarna postać liczby
+PROGRAM IS
+    n,p[1:2]
+IN
+    n:=1;
+    p[2]:=2;
+    n:=1+p[2];
+    p[1]:=n*p[2];
+    p[1]:=n/p[2];
+    p[1]:=n%p[2];
+END
