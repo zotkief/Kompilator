@@ -5,12 +5,12 @@
 * Ply 3.11
 
 # Wymagania działania kompilatora:
-wymagania.pdf
+[PDF](wymagania.pdf)
 
 # Wywołanie kompilatora:
-bash```
-python -m main.py <input> <output>
-```
+
+`python -m main.py <input> <output>`
+
  
 gdzie:
 * <input> - plik z kodem
