@@ -1,12 +1,12 @@
 import ply.lex as lex
 
 tokens = ( 'PLUS', 'MINUS', 'POW', 'MUL', 'DIV', 'MOD', 'COMM',
-    'OPENB', 'CLOSEB', 'NEWLINE', 'OPENTAB', 'CLOSETAB', 'CONST', 'UNKNOWN', 'TABLE'
+    'OPENB', 'CLOSEB', 'NEWLINE', 'OPENTAB', 'CLOSETAB', 'CONST', 'UNKNOWN', 'TABLE',
     'FOR', 'TO', 'DOWNTO', 'REPEAT', 'UNTIL',
     'EQUAL','ASSIGN','GREATER','LESSER', 'GREATEREQUAL', 'LESSEREQUAL', 'UNEQUAL',
     'IF', 'PROCEDURE', 'IS', 'IN', 'END', 'PROGRAM', 'THEN', 'ELSE', 'ENDIF', 'WHILE', 'DO','ENDWHILE', 'READ', 'WRITE',
     'NUMBER', 'LABEL',
-    'SEMICOLON', 'COMMA', 'COLON', 'FOR', 'FROM', 'ENDFOR',
+    'SEMICOLON', 'COMMA', 'COLON', 'FROM', 'ENDFOR',
     'T','O','I'
 )
 
@@ -22,11 +22,10 @@ states = (
     ('COMMENT', 'exclusive'),
 )
 
-def t_comm_START(t):
+def t_INITIAL_COMMENT_START(t):
     r'\#'
-    if t.lexer.lexpos - len(t.value) == 0:
-        t.lexer.begin('COMMENT')
-    pass
+    t.lexer.begin('COMMENT')
+
 
 t_COMMENT_ignore = ''
 

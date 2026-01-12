@@ -10,7 +10,7 @@ def main():
         return
     
     logging.basicConfig(
-        level = logging.DEBUG,
+        #level = logging.DEBUG,
         filename = "parser.out",
         filemode = "w"
     )
@@ -25,21 +25,21 @@ def main():
 
     lexer.input(open(input_path).read())
 
-    for tok in lexer:
-        print(tok)
+    #for tok in lexer:
+    #    print(tok)
 
 
     with open(input_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    result = parser.parse(content, lexer=lexer, debug=True)
+    result = parser.parse(content, lexer=lexer)#, debug=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
         
         if result and hasattr(result, "instruction_list"):
             i=0
             for instr in result.instruction_list:
-                f.write(str(i)+" "+instr + "\n")
+                f.write(instr + "\n")
                 i+=1
         elif result:
             print("Kompilacja zakończona pomyślnie, ale lista instrukcji jest pusta.")
@@ -49,3 +49,35 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""
+
+from kompilator.lexer import lexer
+from pathlib import Path
+import sys
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("Użycie: python main.py <plik_wejsciowy> <plik_wyjsciowy>")
+        return
+
+    BASE_DIR = Path(__file__).parent
+
+    input_path = BASE_DIR / sys.argv[1]
+    output_path = BASE_DIR / sys.argv[2]
+
+    with open(input_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    lexer.input(content)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        for tok in lexer:
+            f.write(
+                f"type={tok.type}, value={tok.value}, "
+                f"line={tok.lineno}, pos={tok.lexpos}\n"
+            )
+
+
+if __name__ == "__main__":
+    main()"""

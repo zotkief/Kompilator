@@ -2,47 +2,143 @@ from ..classes import *
 from .helpers import *
 from ..symbols import *
 
-def loadValue(val : value, register : str, prefix : str,instruction_list: List[str]):
-    if isinstance(val,int):
-        constructNumberInH(val,instruction_list)
+def loadValue(v: value, register: str, prefix: str, instruction_list: List[str]):
+    if isinstance(v.val, int):
+        constructNumberInH(v.val, instruction_list)
         if register != "h":
             instruction_list.append("SWP h")
-            instruction_list.append("SWP "+register)
+            instruction_list.append("SWP " + register)
     else:
-        curr_id=val
+        curr_id = v.val
+        dec=globalIdentifierHashMap[prefix+curr_id.name]
         if not curr_id.isTable:
-            if (not prefix+curr_id.name in globalIdentifierHashMap):
-                raise "niezadeklarowana zmienna"
-            dec=globalIdentifierHashMap[prefix+curr_id.name]
+            name=curr_id.name
+            name=prefix+name
+
+            if name not in globalIdentifierHashMap:
+                raise Exception("niezadeklarowana zmienna:"+name)
+            
             if (not dec.readable):
-                raise "zmienna nie jest odczytywalna"
-            instruction_list.append("LOAD "+str(dec.dataStart))
+                raise ValueError("zmienna nie jest odczytywalna: "+dec.varName)
+
+            constructNumberInH(dec.dataStart,instruction_list)
+            instruction_list.append("SWP h")
+            instruction_list.append("SWP b")
+            instruction_list.append("RLOAD b")
+            
+            if dec.isRefrence:
+                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD b")
+
             instruction_list.append("SWP "+register)
         elif isinstance(curr_id.index,int):
             if (not prefix+curr_id.name in globalIdentifierHashMap):
-                raise "niezadeklarowana zmienna"
-            dec=globalIdentifierHashMap[prefix+curr_id.name]
+                raise ValueError("niezadeklarowana zmienna")
 
             current_index=curr_id.index-dec.indexStart
 
-            if current_index<dec.dataStart or current_index>dec.dataEnd:
-                raise "indeks poza zakresem"
-            instruction_list.append("LOAD "+str(dec.dataStart+current_index))
-            instruction_list.append("SWP "+register)
+            if dec.isRefrence:
+                constructNumberInH(dec.dataStart,instruction_list)
+                instruction_list.append("SWP h")
+                instruction_list.append("SWP b")
+                constructNumberInH(current_index,instruction_list)
+                instruction_list.append("RLOAD b")
+                instruction_list.append("ADD h")
+                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD b")
+                instruction_list.append("SWP "+register)
+            else:
+                if current_index<dec.dataStart or current_index>dec.dataEnd:
+                    #raise "indeks poza zakresem"
+                    pass
+                constructNumberInH(dec.dataStart+current_index,instruction_list)
+                instruction_list.append("SWP h")
+                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD b")
+                instruction_list.append("SWP "+register)
         else:
             if (not prefix+curr_id.name in globalIdentifierHashMap):
-                raise "niezadeklarowana zmienna (tablica)"
+                raise ValueError("niezadeklarowana zmienna (tablica)")
             if (not prefix+curr_id.index in globalIdentifierHashMap):
-                raise "niezadeklarowana zmienna (indeks)"
+                raise ValueError("niezadeklarowana zmienna (indeks)")
             indexDec=globalIdentifierHashMap[prefix+curr_id.index]
             if (indexDec.isTable):
-                raise "zmienna nie jest tablicą"
-            dec=globalIdentifierHashMap[prefix+curr_id.name]
-            current_index=curr_id.index-indexDec.indexStart
-            instruction_list.append("LOAD "+str(indexDec.dataStart+current_index))
-            instruction_list.append("SWP g")
-            instruction_list.append("RLOAD g")
-            instruction_list.append("SWP "+register)
+                raise ValueError("index jest tablicą")
+            if (not dec.readable):
+                raise ValueError("wartość nie jest odczytywalna")
+            if (not indexDec.readable):
+                raise ValueError("indeks nie jest odczytywalny")
+            
+
+            if (not dec.isRefrence) and (not indexDec.isRefrence):
+
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
+
+                instruction_list.append("SWP b")
+                constructNumberInH(dec.dataStart,instruction_list)
+                instruction_list.append("SWP b")
+                instruction_list.append("ADD h")
+
+                instruction_list.append("SWP b")
+                constructNumberInH(dec.indexStart,instruction_list)
+                instruction_list.append("SWP b")
+                instruction_list.append("SUB h")
+
+                instruction_list.append("SWP c")
+
+                instruction_list.append("RLOAD c")
+
+                instruction_list.append("SWP "+register)
+            elif (not dec.isRefrence) and (indexDec.isRefrence):
+
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
+
+                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD b")
+
+                instruction_list.append("SWP b")
+                constructNumberInH(dec.dataStart,instruction_list)
+                instruction_list.append("SWP b")
+                instruction_list.append("ADD h")
+
+                instruction_list.append("SWP b")
+                constructNumberInH(dec.indexStart,instruction_list)
+                instruction_list.append("SWP b")
+                instruction_list.append("SUB h")
+
+                instruction_list.append("SWP c")
+
+                instruction_list.append("RLOAD c")
+
+                instruction_list.append("SWP "+register)
+            elif (dec.isRefrence) and (not indexDec.isRefrence):
+
+                
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
+                instruction_list.append("SWP c")
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
+                instruction_list.append("ADD c")
+                instruction_list.append("SWP c")
+                instruction_list.append("RLOAD c")
+                instruction_list.append("SWP "+register)
+
+            else:
+                
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
+                instruction_list.append("SWP c")
+                instruction_list.append("RLOAD c")
+                instruction_list.append("SWP c")
+
+                instruction_list.append("LOAD "+str(dec.dataStart))
+                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD b")
+
+                instruction_list.append("ADD c")
+                instruction_list.append("SWP c")
+                instruction_list.append("RLOAD c")
+                instruction_list.append("SWP "+register)
+                
+
 
 def performOperation(operation : str,instruction_list: List[str]):
 
@@ -92,9 +188,19 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             #error
             pass
         dec=globalIdentifierHashMap[prefix+curr_id.name]
-        instruction_list.append("SWP "+register)
-        instruction_list.append("STORE "+str(dec.dataStart))
+        if not dec.writable:
+            raise ValueError("zmienna nie nadpisywalna: "+dec.varName)
+
+        if dec.isRefrence:
+            instruction_list.append("LOAD "+str(dec.dataStart))
+            instruction_list.append("SWP b")
+            instruction_list.append("SWP "+register)
+            instruction_list.append("RSTORE b")
+        else:
+            instruction_list.append("SWP "+register)
+            instruction_list.append("STORE "+str(dec.dataStart))
     elif isinstance(curr_id.index,int):
+
         if (not prefix+curr_id.name in globalIdentifierHashMap):
             #error
             pass
@@ -102,25 +208,106 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             #error
         dec=globalIdentifierHashMap[prefix+curr_id.name]
         current_index=curr_id.index-dec.indexStart
-        instruction_list.append("SWP "+register)
-        instruction_list.append("STORE "+str(dec.dataStart+current_index))
+
+        if not dec.writable:
+            raise ValueError("zmienna nie jest nadpisywalna")
+
+        if dec.isRefrence:
+            constructNumberInH(dec.dataStart,instruction_list)
+            instruction_list.append("SWP h")
+            instruction_list.append("SWP b")
+            constructNumberInH(current_index,instruction_list)
+            instruction_list.append("RLOAD b")
+            instruction_list.append("ADD h")
+            instruction_list.append("SWP b")
+
+            instruction_list.append("SWP "+register)
+
+            instruction_list.append("STORE b")
+        else:
+            current_index=curr_id.index-dec.indexStart
+            instruction_list.append("SWP "+register)
+            instruction_list.append("STORE "+str(dec.dataStart+current_index))
     else:
+        dec=globalIdentifierHashMap[prefix+curr_id.name]
         if (not prefix+curr_id.name in globalIdentifierHashMap):
-            #error
-            pass
+            raise ValueError("niezadeklarowana zmienna (tablica)")
         if (not prefix+curr_id.index in globalIdentifierHashMap):
-            #error
-            pass
-        #if index poza zakresem 
-            #error
+            raise ValueError("niezadeklarowana zmienna (indeks)")
         indexDec=globalIdentifierHashMap[prefix+curr_id.index]
         if (indexDec.isTable):
-            #error
-            pass
-        dec=globalIdentifierHashMap[prefix+curr_id.name]
-        current_index=curr_id.index-indexDec.indexStart
-        instruction_list.append("LOAD "+str(indexDec.dataStart+current_index))
-        instruction_list.append("SWP g")
-        instruction_list.append("SWP "+register)
-        instruction_list.append("RSTORE g")
+            raise ValueError("index jest tablicą")
+        if (not dec.writable):
+            raise ValueError("wartość nie jest odczytywalna")
+        if (not indexDec.readable):
+            raise ValueError("indeks nie jest odczytywalny: "+indexDec.varName)
+        
+
+        if (not dec.isRefrence) and (not indexDec.isRefrence):
+
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+
+            instruction_list.append("SWP b")
+            constructNumberInH(dec.dataStart,instruction_list)
+            instruction_list.append("SWP b")
+            instruction_list.append("ADD h")
+
+            instruction_list.append("SWP b")
+            constructNumberInH(dec.indexStart,instruction_list)
+            instruction_list.append("SWP b")
+            instruction_list.append("SUB h")
+
+            instruction_list.append("SWP c")
+
+            instruction_list.append("SWP "+register)
+
+            instruction_list.append("RSTORE c")
+        elif (not dec.isRefrence) and (indexDec.isRefrence):
+
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+
+            instruction_list.append("SWP b")
+            instruction_list.append("RLOAD b")
+
+            instruction_list.append("SWP b")
+            constructNumberInH(dec.dataStart,instruction_list)
+            instruction_list.append("SWP b")
+            instruction_list.append("ADD h")
+
+            instruction_list.append("SWP b")
+            constructNumberInH(dec.indexStart,instruction_list)
+            instruction_list.append("SWP b")
+            instruction_list.append("SUB h")
+
+            instruction_list.append("SWP c")
+
+            instruction_list.append("SWP "+register)
+
+            instruction_list.append("RSTORE c")
+        elif (dec.isRefrence) and (not indexDec.isRefrence):
+
+            
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+            instruction_list.append("SWP c")
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+            instruction_list.append("ADD c")
+            instruction_list.append("SWP c")
+            instruction_list.append("SWP "+register)
+            instruction_list.append("RSTORE c")
+
+        else:
+            
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+            instruction_list.append("SWP c")
+            instruction_list.append("RLOAD c")
+            instruction_list.append("SWP c")
+
+            instruction_list.append("LOAD "+str(dec.dataStart))
+            instruction_list.append("SWP b")
+            instruction_list.append("RLOAD b")
+
+            instruction_list.append("ADD c")
+            instruction_list.append("SWP c")
+            instruction_list.append("SWP "+register)
+            instruction_list.append("RSTORE c")
 

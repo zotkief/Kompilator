@@ -1,6 +1,8 @@
-cellCounter = 1
+cellCounter = 3
+forCounter = 1
 
 globalIdentifierHashMap = {}
+functionArgumentsHashMap = {}
 
 functionHashMap = {
     "PROGRAM_mul": 1,

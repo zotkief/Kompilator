@@ -1,8 +1,8 @@
 from ..classes import *
 from .conditions import *
+import kompilator.symbols as sym
 
 def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]):
-
     comms = commands.comms
 
     for comm in comms:
@@ -54,82 +54,209 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                 for i in jumpsIfFail:
                     instruction_list[i]+= str(loopBegin)
             case "FORTO":
-                iteratorIdentifier = identifier(False,comm.arguments[0],0)
-                startValue:value = comm.arguments[1]
-                endValue:value = comm.arguments[2]
+                iterator = identifier(False, comm.arguments[0], 0)
+                startValue = comm.arguments[1]
+                endValue = comm.arguments[2]
                 subcommands = comm.arguments[3]
-                if not prefix+iteratorIdentifier in globalIdentifierHashMap:
-                    raise "niezadeklarowana zmienna (iterator)"
 
-                #assigning starting value
-                exp = expression(isDouble=False,val1=startValue,val2=startValue,operation="")
-                loadExpression(exp,"h",prefix,instruction_list)
-                uploadFromRegister(iteratorIdentifier,"h",prefix,instruction_list)
-                globalIdentifierHashMap[prefix+iteratorIdentifier].writable = False
+                key = prefix + iterator.name
+                if key not in globalIdentifierHashMap:
+                    globalIdentifierHashMap[key]=declaration(
+                        dataStart = sym.cellCounter,
+                        dataEnd = sym.cellCounter,
+                        isTable = False,
+                        varName = key,
+                        indexStart = 0,
+                        writable= True,
+                        readable= True,
+                        isRefrence= False,
+                        refrencedIdentifier=""
+                    )
+                    sym.cellCounter+=1
 
-                #generating subcommands
-                loopStart=len(instruction_list)
-                analizeProgram(subcommands,prefix,instruction_list)
+                # ===== zmienna końcowa (z prefiksem!) =====
+                forName = "FOR_" + str(sym.forCounter)
+                sym.forCounter += 1
+                cell = sym.cellCounter
+                sym.cellCounter += 1
 
-                #creating temporary condition 
-                val1 = value(iteratorIdentifier)
-                cond:condition = condition(val1=val1, val2=endValue, operation="=")
-
-                jumpsIfFail=[]
-                buildCondition(cond,prefix,instruction_list,jumpsIfFail)
-
-                #itaration
-                globalIdentifierHashMap[prefix+iteratorIdentifier].writable = True
-                exp = expression(
-                    isDouble=False,
-                    val1=value(identifier(False,iteratorIdentifier,0)),
-                    val2=value(1),
-                    operation="+"
+                globalIdentifierHashMap[prefix + forName] = declaration(
+                    cell, cell, False, forName, 0, True, True,False,""
                 )
-                loadExpression(exp,"h",prefix,instruction_list)
-                uploadFromRegister(iteratorIdentifier,"h",prefix,instruction_list)
+                globalIdentifierHashMap[key].writable = True
+
+                expEnd = expression(False, endValue, endValue, "")
+                loadExpression(expEnd, "h", prefix, instruction_list)
+                uploadFromRegister(identifier(False, forName, 0), "h", prefix, instruction_list)
+
+                # ===== i := start =====
+                expStart = expression(False, startValue, startValue, "")
+                loadExpression(expStart, "h", prefix, instruction_list)
+                uploadFromRegister(iterator, "h", prefix, instruction_list)
+
+                globalIdentifierHashMap[key].writable = False
+
+                loopStart = len(instruction_list)
+
+                # ===== CIAŁO =====
+                analizeProgram(subcommands, prefix, instruction_list)
+
+                # ===== WARUNEK WYJŚCIA =====
+                exitCond = condition(
+                    value(iterator),
+                    value(identifier(False, forName, 0)),
+                    "="
+                )
+                startJumps = []
+                buildCondition(exitCond, prefix, instruction_list, startJumps)
+                loopEnd=len(instruction_list)
+                instruction_list.append("JUMP ")
+
+                for i in startJumps:
+                    instruction_list[i] += str(len(instruction_list))
 
 
-                for i in jumpsIfFail:
-                    instruction_list[i]+=loopStart
+                # ===== i := i + 1 =====
+                globalIdentifierHashMap[key].writable = True
+                expInc = expression(True, value(iterator), value(1), "+")
+                loadExpression(expInc, "h", prefix, instruction_list)
+                uploadFromRegister(iterator, "h", prefix, instruction_list)
+                #globalIdentifierHashMap[key].writable = False
+
+                instruction_list.append(f"JUMP {loopStart}")
+
+                instruction_list[loopEnd] += str(len(instruction_list))
+
             case "FORDOWN":
-                iteratorIdentifier = identifier(False,comm.arguments[0],0)
-                startValue:value = comm.arguments[1]
-                endValue:value = comm.arguments[2]
+
+                iterator = identifier(False, comm.arguments[0], 0)
+                startValue = comm.arguments[1]
+                endValue = comm.arguments[2]
                 subcommands = comm.arguments[3]
-                if not prefix+iteratorIdentifier in globalIdentifierHashMap:
-                    raise "niezadeklarowana zmienna (iterator)"
 
-                #assigning starting value
-                exp = expression(isDouble=False,val1=startValue,val2=startValue,operation="")
-                loadExpression(exp,"h",prefix,instruction_list)
-                uploadFromRegister(iteratorIdentifier,"h",prefix,instruction_list)
-                globalIdentifierHashMap[prefix+iteratorIdentifier].writable = False
+                key = prefix + iterator.name
 
-                #generating subcommands
-                loopStart=len(instruction_list)
-                analizeProgram(subcommands,prefix,instruction_list)
+                if key not in globalIdentifierHashMap:
+                    globalIdentifierHashMap[key]=globalIdentifierHashMap[key]=declaration(
+                        dataStart = sym.cellCounter,
+                        dataEnd = sym.cellCounter,
+                        isTable = False,
+                        varName = key,
+                        indexStart = 0,
+                        writable= True,
+                        readable= True,
+                        isRefrence= False,
+                        refrencedIdentifier=""
+                    )
+                    sym.cellCounter+=1
 
-                #creating temporary condition 
-                val1 = value(iteratorIdentifier)
-                cond:condition = condition(val1=val1, val2=endValue, operation="=")
+                # ===== zmienna końcowa (z prefiksem!) =====
+                forName = "FOR_" + str(sym.forCounter)
+                sym.forCounter += 1
+                cell = sym.cellCounter
+                sym.cellCounter += 1
 
-                jumpsIfFail=[]
-                buildCondition(cond,prefix,instruction_list,jumpsIfFail)
-
-                #itaration
-                globalIdentifierHashMap[prefix+iteratorIdentifier].writable = True
-                exp = expression(
-                    isDouble=False,
-                    val1=value(identifier(False,iteratorIdentifier,0)),
-                    val2=value(1),
-                    operation="-"
+                globalIdentifierHashMap[prefix + forName] = declaration(
+                    cell, cell, False, forName, 0, True, True, False, ""
                 )
-                loadExpression(exp,"h",prefix,instruction_list)
-                uploadFromRegister(iteratorIdentifier,"h",prefix,instruction_list)
 
-                for i in jumpsIfFail:
-                    instruction_list[i]+=loopStart
+                expEnd = expression(False, endValue, endValue, "")
+                loadExpression(expEnd, "h", prefix, instruction_list)
+                uploadFromRegister(identifier(False, forName, 0), "h", prefix, instruction_list)
+
+                # ===== i := start =====
+                expStart = expression(False, startValue, startValue, "")
+                loadExpression(expStart, "h", prefix, instruction_list)
+                uploadFromRegister(iterator, "h", prefix, instruction_list)
+
+                globalIdentifierHashMap[key].writable = False
+
+                loopStart = len(instruction_list)
+
+                # ===== CIAŁO =====
+                analizeProgram(subcommands, prefix, instruction_list)
+
+                # ===== WARUNEK WYJŚCIA =====
+                exitCond = condition(
+                    value(iterator),
+                    value(identifier(False, forName, 0)),
+                    "="
+                )
+                startJumps = []
+                buildCondition(exitCond, prefix, instruction_list, startJumps)
+                loopEnd=len(instruction_list)
+                instruction_list.append("JUMP ")
+
+                for i in startJumps:
+                    instruction_list[i] += str(len(instruction_list))
+
+
+                # ===== i := i + 1 =====
+                globalIdentifierHashMap[key].writable = True
+                expInc = expression(True, value(iterator), value(1), "-")
+                loadExpression(expInc, "h", prefix, instruction_list)
+                uploadFromRegister(iterator, "h", prefix, instruction_list)
+                globalIdentifierHashMap[key].writable = False
+
+                instruction_list.append(f"JUMP {loopStart}")
+
+                instruction_list[loopEnd] += str(len(instruction_list))
+
+            case "READ":
+                instruction_list.append("READ")
+                uploadFromRegister(comm.arguments[0],"a",prefix,instruction_list)
+            case "WRITE":
+                loadValue(comm.arguments[0],"a",prefix,instruction_list)
+                instruction_list.append("WRITE")
+
+            case "PROC_CALL":
+                call=comm.arguments[0]
+                proc_name=call.proc_name
+                arg_call_list=call.args_list
+                arg_proc_list=functionArgumentsHashMap[proc_name]
+
+                if not len(arg_call_list)==len(arg_proc_list):
+                    raise ValueError("inna liczba argumentów")
                 
+                for i in range(len(arg_proc_list)):
+                    arg_type,arg_name=arg_proc_list[i]
+                    original_dec=sym.globalIdentifierHashMap[prefix+arg_call_list[i]]
+                    reference_dec=sym.globalIdentifierHashMap[proc_name+"_"+arg_name]
+
+                    if original_dec.isRefrence:
+                        instruction_list.append("LOAD "+str(original_dec.dataStart))
+                        instruction_list.append("STORE "+str(reference_dec.dataStart))
+                    elif arg_type=="T":
+                        constructNumberInH(original_dec.dataStart-original_dec.indexStart,instruction_list)
+                        instruction_list.append("SWP h")
+                        instruction_list.append("STORE "+str(reference_dec.dataStart))
+                    else:
+                        constructNumberInH(original_dec.dataStart,instruction_list)
+                        instruction_list.append("SWP h")
+                        instruction_list.append("STORE "+str(reference_dec.dataStart))
+
+                instruction_list.append("CALL "+str(functionHashMap[proc_name]))
+                        
+                
+
+def buildProcedures(procs : procedures, instruction_list: List[str]):
+    for proc in procs:
+        decs=proc.declarations
+
+        for key,val in decs.identifierHashMap.items():
+            globalName=proc.head.proc_name+"_"+key
+            globalIdentifierHashMap[globalName]=val
+
+        sym.functionHashMap[proc.head.proc_name] = len(instruction_list)
+
+        instruction_list.append("STORE "+str(globalIdentifierHashMap[proc.head.proc_name+"_return"].dataStart))
+
+        print(sym.globalIdentifierHashMap.keys())
+
+        analizeProgram(proc.body,proc.head.proc_name+"_",instruction_list)
+
+        instruction_list.append("LOAD "+str(globalIdentifierHashMap[proc.head.proc_name+"_return"].dataStart))
+        instruction_list.append("RTRN")
+
 
 

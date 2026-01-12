@@ -1,121 +1,726 @@
-0 JUMP 69
-1 SWP c
-2 RST a
-3 RST h
-4 RST b
-5 JUMP 21
-6 ADD f
-7 SWP b
-8 ADD f
-9 INC a
-10 SHR a
-11 SHR b
-12 SUB b
-13 JZERO 17
-14 SWP h
-15 ADD e
-16 SWP h
-17 RST a
-18 RST b
-19 SHL e
-20 SHR f
-21 SWP f
-22 JZERO 25
-23 SWP f
-24 JUMP 6
-25 RST a
-26 RST e
-27 SWP c
-28 RTRN
-29 SWP c
-30 RST a
-31 RST b
-32 RST h
-33 INC h
-34 ADD f
-35 SWP b
-36 JUMP 39
-37 SHL b
-38 SHL h
-39 RST a
-40 ADD b
-41 SUB e
-42 JZERO 37
-43 SHR h
-44 SHR b
-45 RST a
-46 ADD e
-47 INC a
-48 SUB b
-49 JZERO 57
-50 SWP e
-51 SUB b
-52 SWP e
-53 SWP d
-54 ADD h
-55 SWP d
-56 RST a
-57 ADD f
-58 SUB e
-59 JPOS 62
-60 JUMP 44
-61 SWP d
-62 SWP f
-63 RST d
-64 RST a
-65 RST b
-66 RST h
-67 SWP c
-68 RTRN
-69 RST h
-70 SHL h
-71 INC h
-72 SWP h
-73 STORE 1
-74 RST h
-75 SHL h
-76 INC h
-77 SHL h
-78 SWP h
-79 STORE 3
-80 RST h
-81 SHL h
-82 INC h
-83 SWP h
-84 SWP e
-85 LOAD 3
-86 SWP f
-87 RST a
-88 ADD e
-89 ADD f
-90 SWP h
-91 SWP h
-92 STORE 1
-93 LOAD 1
-94 SWP e
-95 LOAD 3
-96 SWP f
-97 CALL 1
-98 RST a
-99 SWP h
-100 STORE 2
-101 LOAD 1
-102 SWP e
-103 LOAD 3
-104 SWP f
-105 CALL 29
-106 RST a
-107 SWP f
-108 SWP h
-109 SWP h
-110 STORE 2
-111 LOAD 1
-112 SWP e
-113 LOAD 3
-114 SWP f
-115 CALL 29
-116 RST a
-117 SWP e
-118 SWP h
-119 SWP h
-120 STORE 2
+JUMP 624
+STORE 1
+RST a
+RST h
+RST b
+JUMP 21
+ADD f
+SWP b
+ADD f
+INC a
+SHR a
+SHR b
+SUB b
+JZERO 17
+SWP h
+ADD e
+SWP h
+RST a
+RST b
+SHL e
+SHR f
+SWP f
+JZERO 25
+SWP f
+JUMP 6
+RST a
+RST e
+LOAD 1
+RTRN
+STORE 2
+SWP f
+JZERO 67
+SWP f
+RST e
+RST h
+INC h
+RST a
+ADD f
+SWP d
+RST a
+ADD f
+SWP b
+RST a
+ADD b
+SUB e
+JPOS 48
+SHL b
+SHL h
+JUMP 41
+SHR b
+SHR h
+SWP h
+JZERO 66
+SWP h
+RST a
+ADD f
+SUB b
+JPOS 63
+SWP f
+SUB b
+SWP f
+SWP e
+ADD h
+SWP e
+SHR b
+SHR h
+JUMP 50
+LOAD 2
+RTRN
+RST e
+RST f
+LOAD 2
+RTRN
+STORE 3
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 9
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 10
+RST h
+SHL h
+INC h
+LOAD 6
+SWP b
+SWP h
+RSTORE b
+RST h
+LOAD 7
+SWP b
+SWP h
+RSTORE b
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 11
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SWP h
+SWP f
+RST a
+ADD e
+SUB f
+SWP h
+SWP h
+STORE 12
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SWP h
+SWP f
+RST a
+ADD f
+INC a
+SUB e
+JPOS 607
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 29
+RST a
+SWP e
+SWP h
+SWP h
+STORE 13
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 29
+RST a
+SWP f
+SWP h
+SWP h
+STORE 14
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 9
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 10
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 15
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 1
+RST a
+SWP h
+STORE 17
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+INC a
+SUB f
+JPOS 351
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 1
+RST a
+SWP h
+STORE 11
+JUMP 354
+RST h
+SWP h
+STORE 11
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+ADD f
+SWP h
+SWP h
+STORE 11
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+SUB f
+SWP h
+SWP h
+STORE 11
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP h
+SWP h
+STORE 16
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 1
+RST a
+SWP h
+STORE 17
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+INC a
+SUB f
+JPOS 512
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP f
+CALL 1
+RST a
+SWP h
+STORE 12
+JUMP 515
+RST h
+SWP h
+STORE 12
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+ADD f
+SWP h
+SWP h
+STORE 12
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP e
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP f
+RST a
+ADD e
+SUB f
+SWP h
+SWP h
+STORE 12
+RST h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP h
+LOAD 6
+SWP b
+SWP h
+RSTORE b
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP h
+LOAD 7
+SWP b
+SWP h
+RSTORE b
+JUMP 149
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP h
+LOAD 8
+SWP b
+SWP h
+RSTORE b
+LOAD 3
+RTRN
+READ
+SWP a
+STORE 18
+READ
+SWP a
+STORE 19
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+INC h
+SHL h
+SWP h
+STORE 4
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SWP h
+STORE 5
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+STORE 6
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+STORE 7
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+STORE 8
+CALL 73
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP a
+WRITE
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SWP h
+SWP b
+RLOAD b
+SWP a
+WRITE
+RST h
+SHL h
+INC h
+SHL h
+SHL h
+INC h
+SHL h
+INC h
+SHL h
+SWP h
+SWP b
+RLOAD b
+SWP a
+WRITE
+HALT

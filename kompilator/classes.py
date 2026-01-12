@@ -1,15 +1,17 @@
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List, Any, Tuple
 
 @dataclass
 class declaration:
-    dataStart       : int
-    dataEnd         : int
-    isTable         : bool
-    varName         : str
-    indexStart      : int
-    writable        : bool
-    readable        : bool
+    dataStart           : int
+    dataEnd             : int
+    isTable             : bool
+    varName             : str
+    indexStart          : int
+    writable            : bool
+    readable            : bool
+    isRefrence          : bool
+    refrencedIdentifier : str
     
 
 @dataclass
@@ -17,17 +19,13 @@ class programm_all:
     instruction_list: List[str]
 
 @dataclass
-class procedures:
-    instruction_list: List[str]
-
-@dataclass
 class declarations:
-    identifierHashMap={}
+    identifierHashMap: dict = field(default_factory=dict)
 
 
 @dataclass
 class commands:
-    comms: List['command'] = field(default_factory=list)
+    comms: List[Any] = field(default_factory=list)
 
 @dataclass
 class main:
@@ -36,7 +34,13 @@ class main:
 
 @dataclass
 class proc_head:
-    instruction_list: List[str]
+    proc_name : str
+    args_tab: List[Tuple[type, str]]
+
+@dataclass
+class proc_call:
+    proc_name : str
+    args_list: List[str]
 
 @dataclass
 class command:
@@ -55,6 +59,10 @@ class value:
     val : int|identifier
 
 @dataclass
+class type:
+    t : str
+
+@dataclass
 class expression:
     isDouble    : bool
     val1        : value
@@ -71,4 +79,20 @@ class condition:
 
 @dataclass
 class args:
-    instruction_list: List[str]
+    args_list: List[str]
+
+
+@dataclass
+class args_decl:
+    args_tab: List[Any] = field(default_factory=list)
+
+@dataclass
+class procedure:
+    head: Any
+    declarations: declarations = field(default_factory=declarations)
+    body: Any = field(default_factory=lambda: commands([]))
+
+
+@dataclass
+class procedures:
+    procedure_list: List[procedure] = field(default_factory=list)
