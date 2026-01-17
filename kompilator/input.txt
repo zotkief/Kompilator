@@ -7,9 +7,12 @@ PROCEDURE factorial(T s, I n) IS
   p
 IN
   s[0]:=1;
+  WRITE s[0];
   p:=s[0];
   FOR i FROM 1 TO n DO
     s[i]:=p*i;
+    WRITE p;
+    WRITE i;
     p:=s[i];
   ENDFOR
 END

@@ -272,7 +272,7 @@ def p_proc_head(p):
                 )
                 globalIdentifierHashMap[var_name] = dec
             
-        sym.cellCounter += 1
+        sym.cellCounter += 2
         print(var_name)
         print(dec)
                 
@@ -334,7 +334,6 @@ def p_declarations(p):
         var_name=p[1]
         if p[3]>p[5]:
             raise ValueError("błąd indeksów tablic")
-        sym.cellCounter=max(sym.cellCounter,p[3])
         dec = declaration(
             dataStart = sym.cellCounter,
             dataEnd = sym.cellCounter+p[5]-p[3],
@@ -359,7 +358,6 @@ def p_declarations(p):
             raise ValueError(f"Błąd: Zmienna '{var_name}' już istnieje.")
         if p[5]>p[7]:
             raise ValueError("błąd indeksów tablic")
-        sym.cellCounter=max(sym.cellCounter,p[5])
         dec = declaration(
             dataStart = sym.cellCounter,
             dataEnd = sym.cellCounter+p[7]-p[5],

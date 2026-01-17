@@ -240,17 +240,24 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                     if original_dec.isRefrence:
                         instruction_list.append("LOAD "+str(original_dec.dataStart))
                         instruction_list.append("STORE "+str(reference_dec.dataStart))
+
+                        instruction_list.append("LOAD "+str(original_dec.dataStart+1))
+                        instruction_list.append("STORE "+str(reference_dec.dataStart+1))
                     elif original_dec.isTable:
-                        constructNumberInH(original_dec.dataStart-original_dec.indexStart,instruction_list)
-                        print(original_dec.varName)
-                        print(original_dec.dataStart)
-                        print(original_dec.indexStart)
+                        constructNumberInH(original_dec.dataStart,instruction_list)
                         instruction_list.append("SWP h")
                         instruction_list.append("STORE "+str(reference_dec.dataStart))
+
+                        constructNumberInH(original_dec.indexStart,instruction_list)
+                        instruction_list.append("SWP h")
+                        instruction_list.append("STORE "+str(reference_dec.dataStart+1))
                     else:
                         constructNumberInH(original_dec.dataStart,instruction_list)
                         instruction_list.append("SWP h")
                         instruction_list.append("STORE "+str(reference_dec.dataStart))
+
+                        instruction_list.append("RST a")
+                        instruction_list.append("STORE "+str(reference_dec.dataStart+1))
 
                 instruction_list.append("CALL "+str(functionHashMap[proc_name]))
                         

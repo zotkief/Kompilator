@@ -39,18 +39,19 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
 
             if dec.isRefrence:
                 constructNumberInH(dec.dataStart,instruction_list)
-                instruction_list.append("SWP h")
-                instruction_list.append("SWP b")
+                instruction_list.append("RLOAD h")
                 constructNumberInH(current_index,instruction_list)
-                instruction_list.append("RLOAD b")
                 instruction_list.append("ADD h")
+                instruction_list.append("SWP b")
+
+                constructNumberInH(dec.dataStart+1,instruction_list)
+                instruction_list.append("RLOAD h")
+                instruction_list.append("SWP b")
+                instruction_list.append("SUB b")
                 instruction_list.append("SWP b")
                 instruction_list.append("RLOAD b")
                 instruction_list.append("SWP "+register)
             else:
-                if current_index<dec.dataStart or current_index>dec.dataEnd:
-                    #raise "indeks poza zakresem"
-                    pass
                 constructNumberInH(dec.dataStart+current_index,instruction_list)
                 instruction_list.append("SWP h")
                 instruction_list.append("SWP b")
@@ -113,25 +114,30 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
                 instruction_list.append("SWP "+register)
             elif (dec.isRefrence) and (not indexDec.isRefrence):
 
-                
-                instruction_list.append("LOAD "+str(indexDec.dataStart))
-                instruction_list.append("SWP c")
                 instruction_list.append("LOAD "+str(dec.dataStart))
+                instruction_list.append("SWP c")
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
                 instruction_list.append("ADD c")
                 instruction_list.append("SWP c")
+                instruction_list.append("LOAD "+str(dec.dataStart+1))
+                instruction_list.append("SWP c")
+                instruction_list.append("SUB c")
+                instruction_list.append("SWP c")
+
                 instruction_list.append("RLOAD c")
                 instruction_list.append("SWP "+register)
 
             else:
-                
-                instruction_list.append("LOAD "+str(indexDec.dataStart))
-                instruction_list.append("SWP c")
-                instruction_list.append("RLOAD c")
-                instruction_list.append("SWP c")
-
                 instruction_list.append("LOAD "+str(dec.dataStart))
+                instruction_list.append("SWP c")
+                instruction_list.append("LOAD "+str(indexDec.dataStart))
                 instruction_list.append("ADD c")
+                instruction_list.append("SWP c")
+                instruction_list.append("LOAD "+str(dec.dataStart+1))
+                instruction_list.append("SWP c")
+                instruction_list.append("SUB c")
                 instruction_list.append("SWP b")
+
                 instruction_list.append("RLOAD b")
 
                 instruction_list.append("SWP "+register)
@@ -199,11 +205,6 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             instruction_list.append("STORE "+str(dec.dataStart))
     elif isinstance(curr_id.index,int):
 
-        if (not prefix+curr_id.name in globalIdentifierHashMap):
-            #error
-            pass
-        #if index poza zakresem 
-            #error
         dec=globalIdentifierHashMap[prefix+curr_id.name]
         current_index=curr_id.index-dec.indexStart
 
@@ -212,15 +213,16 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
 
         if dec.isRefrence:
             constructNumberInH(dec.dataStart,instruction_list)
-            instruction_list.append("SWP h")
-            instruction_list.append("SWP b")
+            instruction_list.append("RLOAD h")
             constructNumberInH(current_index,instruction_list)
-            instruction_list.append("RLOAD b")
             instruction_list.append("ADD h")
             instruction_list.append("SWP b")
-
+            constructNumberInH(dec.dataStart+1,instruction_list)
+            instruction_list.append("RLOAD h")
+            instruction_list.append("SWP b")
+            instruction_list.append("SUB b")
+            instruction_list.append("SWP b")
             instruction_list.append("SWP "+register)
-
             instruction_list.append("RSTORE b")
         else:
             current_index=curr_id.index-dec.indexStart
@@ -272,36 +274,35 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             instruction_list.append("SWP b")
             instruction_list.append("ADD h")
 
-            instruction_list.append("SWP b")
-            constructNumberInH(dec.indexStart,instruction_list)
-            instruction_list.append("SWP b")
-            instruction_list.append("SUB h")
-
             instruction_list.append("SWP c")
 
             instruction_list.append("SWP "+register)
 
             instruction_list.append("RSTORE c")
         elif (dec.isRefrence) and (not indexDec.isRefrence):
-
-            
             instruction_list.append("LOAD "+str(dec.dataStart))
-            instruction_list.append("SWP c")
+            instruction_list.append("SWP c")    
             instruction_list.append("LOAD "+str(indexDec.dataStart))
             instruction_list.append("ADD c")
+            instruction_list.append("SWP c")    
+            instruction_list.append("LOAD "+str(dec.dataStart+1))
+            instruction_list.append("SWP c")    
+            instruction_list.append("SUB c")
             instruction_list.append("SWP c")
             instruction_list.append("SWP "+register)
             instruction_list.append("RSTORE c")
 
         else:
-            
-            instruction_list.append("LOAD "+str(indexDec.dataStart))
-            instruction_list.append("SWP c")
-            instruction_list.append("RLOAD c")
-            instruction_list.append("SWP c")
-
             instruction_list.append("LOAD "+str(dec.dataStart))
+            instruction_list.append("SWP c")
+            instruction_list.append("LOAD "+str(indexDec.dataStart))
+            instruction_list.append("SWP b")
+            instruction_list.append("RLOAD b")
             instruction_list.append("ADD c")
+            instruction_list.append("SWP c")
+            instruction_list.append("LOAD "+str(dec.dataStart+1))
+            instruction_list.append("SWP c")
+            instruction_list.append("SUB c")
             instruction_list.append("SWP b")
             instruction_list.append("SWP "+register)
             instruction_list.append("RSTORE b")
