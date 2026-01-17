@@ -10,8 +10,8 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
             case "ASSIGN":
                 exp = comm.arguments[1]
                 p_id = comm.arguments[0]
-                loadExpression(exp,"h",prefix,instruction_list)
-                uploadFromRegister(p_id,"h",prefix,instruction_list)
+                loadExpression(exp,"g",prefix,instruction_list)
+                uploadFromRegister(p_id,"g",prefix,instruction_list)
             case "IF":
                 cond:condition = comm.arguments[0]
                 subcommands = comm.arguments[1]
@@ -59,8 +59,10 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                 endValue = comm.arguments[2]
                 subcommands = comm.arguments[3]
 
+                localVar=False
                 key = prefix + iterator.name
                 if key not in globalIdentifierHashMap:
+                    localVar=True
                     globalIdentifierHashMap[key]=declaration(
                         dataStart = sym.cellCounter,
                         dataEnd = sym.cellCounter,
@@ -127,6 +129,11 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
 
                 instruction_list[loopEnd] += str(len(instruction_list))
 
+                if localVar:
+                    instruction_list.append("RST a")
+                    instruction_list.append("LOAD "+str(globalIdentifierHashMap[key].dataStart))
+
+
             case "FORDOWN":
 
                 iterator = identifier(False, comm.arguments[0], 0)
@@ -136,7 +143,9 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
 
                 key = prefix + iterator.name
 
+                localVar=False
                 if key not in globalIdentifierHashMap:
+                    localVar=True
                     globalIdentifierHashMap[key]=globalIdentifierHashMap[key]=declaration(
                         dataStart = sym.cellCounter,
                         dataEnd = sym.cellCounter,
@@ -202,6 +211,11 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
 
                 instruction_list[loopEnd] += str(len(instruction_list))
 
+
+                if localVar:
+                    instruction_list.append("RST a")
+                    instruction_list.append("LOAD "+str(globalIdentifierHashMap[key].dataStart))
+
             case "READ":
                 instruction_list.append("READ")
                 uploadFromRegister(comm.arguments[0],"a",prefix,instruction_list)
@@ -226,8 +240,11 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                     if original_dec.isRefrence:
                         instruction_list.append("LOAD "+str(original_dec.dataStart))
                         instruction_list.append("STORE "+str(reference_dec.dataStart))
-                    elif arg_type=="T":
+                    elif original_dec.isTable:
                         constructNumberInH(original_dec.dataStart-original_dec.indexStart,instruction_list)
+                        print(original_dec.varName)
+                        print(original_dec.dataStart)
+                        print(original_dec.indexStart)
                         instruction_list.append("SWP h")
                         instruction_list.append("STORE "+str(reference_dec.dataStart))
                     else:

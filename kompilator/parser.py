@@ -34,8 +34,8 @@ def p_program_all(p):
 
     buildProcedures(p[1].procedure_list,instruction_list)
 
-    #for key, val in functionHashMap.items():
-        #print(str(key)+" "+str(val))
+    for key, val in functionHashMap.items():
+        print(str(key)+" "+str(val))
 
     instruction_list[0]="JUMP "+str(len(instruction_list))
 
@@ -273,6 +273,8 @@ def p_proc_head(p):
                 globalIdentifierHashMap[var_name] = dec
             
         sym.cellCounter += 1
+        print(var_name)
+        print(dec)
                 
 
 

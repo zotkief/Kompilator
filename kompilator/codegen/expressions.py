@@ -11,7 +11,7 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
     else:
         curr_id = v.val
         dec=globalIdentifierHashMap[prefix+curr_id.name]
-        if not curr_id.isTable:
+        if not dec.isTable:
             name=curr_id.name
             name=prefix+name
 
@@ -116,7 +116,7 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
                 
                 instruction_list.append("LOAD "+str(indexDec.dataStart))
                 instruction_list.append("SWP c")
-                instruction_list.append("LOAD "+str(indexDec.dataStart))
+                instruction_list.append("LOAD "+str(dec.dataStart))
                 instruction_list.append("ADD c")
                 instruction_list.append("SWP c")
                 instruction_list.append("RLOAD c")
@@ -130,12 +130,10 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
                 instruction_list.append("SWP c")
 
                 instruction_list.append("LOAD "+str(dec.dataStart))
+                instruction_list.append("ADD c")
                 instruction_list.append("SWP b")
                 instruction_list.append("RLOAD b")
 
-                instruction_list.append("ADD c")
-                instruction_list.append("SWP c")
-                instruction_list.append("RLOAD c")
                 instruction_list.append("SWP "+register)
                 
 
@@ -223,7 +221,7 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
 
             instruction_list.append("SWP "+register)
 
-            instruction_list.append("STORE b")
+            instruction_list.append("RSTORE b")
         else:
             current_index=curr_id.index-dec.indexStart
             instruction_list.append("SWP "+register)
@@ -287,7 +285,7 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
         elif (dec.isRefrence) and (not indexDec.isRefrence):
 
             
-            instruction_list.append("LOAD "+str(indexDec.dataStart))
+            instruction_list.append("LOAD "+str(dec.dataStart))
             instruction_list.append("SWP c")
             instruction_list.append("LOAD "+str(indexDec.dataStart))
             instruction_list.append("ADD c")
@@ -303,11 +301,9 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             instruction_list.append("SWP c")
 
             instruction_list.append("LOAD "+str(dec.dataStart))
-            instruction_list.append("SWP b")
-            instruction_list.append("RLOAD b")
-
             instruction_list.append("ADD c")
-            instruction_list.append("SWP c")
+            instruction_list.append("SWP b")
             instruction_list.append("SWP "+register)
-            instruction_list.append("RSTORE c")
+            instruction_list.append("RSTORE b")
+
 

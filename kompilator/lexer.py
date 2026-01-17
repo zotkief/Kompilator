@@ -54,13 +54,14 @@ t_MUL    = r'\*'
 t_DIV    = r'/'
 t_MOD    = r'%'
 
-t_EQUAL         = r'='
 t_ASSIGN        = r':='
 t_UNEQUAL       = r'!='
+t_GREATEREQUAL  = r'>='
+t_LESSEREQUAL   = r'<='
 t_GREATER       = r'>'
 t_LESSER        = r'<'
-t_GREATEREQUAL  = r'>='
-t_LESSEREQUAL   = r'<'
+t_EQUAL         = r'='
+
 
 t_OPENB     = r'\('
 t_CLOSEB    = r'\)'
@@ -99,14 +100,12 @@ t_SEMICOLON = r'\;'
 t_COMMA     = r'\,'
 t_COLON     = r'\:'
 
-"""
+
 def t_NEWLINE(t):
     r'\n'
     t.lexer.lineno += 1
-    t.type='NEWLINE'
-    return t"""
 
-t_ignore = ' \t\n'
+t_ignore = ' \t'
 
 def t_error(t):
     print(f"Nieznany znak {t.value[0]!r} w linii {t.lexer.lineno}")

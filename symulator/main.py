@@ -3,8 +3,8 @@ import sys
 import copy
 
 REG_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-MEM_SIZE = 263
-MEM_VIEW = 30
+MEM_SIZE = 5000
+MEM_VIEW = 35
 
 
 class VMError(Exception):
