@@ -1,6 +1,7 @@
 from ..classes import *
 from .conditions import *
 import kompilator.symbols as sym
+import sys
 
 def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]):
     comms = commands.comms
@@ -98,6 +99,16 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
 
                 globalIdentifierHashMap[key].writable = False
 
+                infiniteLoop = []
+                buildCondition(
+                    cond=condition(
+                        val1=value(iterator),
+                        val2=value(identifier(False, forName, 0)),
+                        operation="<="),
+                    prefix=prefix,
+                    instruction_list=instruction_list,
+                    jumpsToChange=infiniteLoop)
+
                 loopStart = len(instruction_list)
 
                 # ===== CIAŁO =====
@@ -132,6 +143,9 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                 if localVar:
                     instruction_list.append("RST a")
                     instruction_list.append("LOAD "+str(globalIdentifierHashMap[key].dataStart))
+
+                for k in infiniteLoop:
+                    instruction_list[k]+=str(len(instruction_list))
 
 
             case "FORDOWN":
@@ -180,6 +194,16 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
 
                 globalIdentifierHashMap[key].writable = False
 
+                infiniteLoop = []
+                buildCondition(
+                    cond=condition(
+                        val1=value(iterator),
+                        val2=value(identifier(False, forName, 0)),
+                        operation=">="),
+                    prefix=prefix,
+                    instruction_list=instruction_list,
+                    jumpsToChange=infiniteLoop)
+
                 loopStart = len(instruction_list)
 
                 # ===== CIAŁO =====
@@ -216,6 +240,9 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                     instruction_list.append("RST a")
                     instruction_list.append("LOAD "+str(globalIdentifierHashMap[key].dataStart))
 
+                for k in infiniteLoop:
+                    instruction_list[k]+=str(len(instruction_list))
+
             case "READ":
                 instruction_list.append("READ")
                 uploadFromRegister(comm.arguments[0],"a",prefix,instruction_list)
@@ -230,7 +257,8 @@ def analizeProgram(commands : commands ,prefix : str,instruction_list: List[str]
                 arg_proc_list=functionArgumentsHashMap[proc_name]
 
                 if not len(arg_call_list)==len(arg_proc_list):
-                    raise ValueError("inna liczba argumentów")
+                    print("inna liczba argumentów")
+                    sys.exit()
                 
                 for i in range(len(arg_proc_list)):
                     arg_type,arg_name=arg_proc_list[i]

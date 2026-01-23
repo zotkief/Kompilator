@@ -310,8 +310,6 @@ def p_declarations(p):
         #print(p[3])
         p[0]=p[1]
         var_name=p[3]
-        if var_name in p[0].identifierHashMap:
-            raise ValueError(ValueError(f"Błąd: Zmienna '{var_name}' już istnieje."))
         dec = declaration(
             dataStart = sym.cellCounter,
             dataEnd = sym.cellCounter,
@@ -328,12 +326,10 @@ def p_declarations(p):
     elif len(p)==7:
         #print(p[1])
         if p[5]<p[3]:
-            #error
-            pass
+            print("nieprawidłowy zakres tablicy")
+            sys.exit()
         p[0]=declarations()
         var_name=p[1]
-        if p[3]>p[5]:
-            raise ValueError("błąd indeksów tablic")
         dec = declaration(
             dataStart = sym.cellCounter,
             dataEnd = sym.cellCounter+p[5]-p[3],
@@ -352,12 +348,8 @@ def p_declarations(p):
         var_name=p[3]
         p[0]=p[1]
         if p[7]<p[5]:
-            #error
-            pass
-        if var_name in p[0].identifierHashMap:
-            raise ValueError(f"Błąd: Zmienna '{var_name}' już istnieje.")
-        if p[5]>p[7]:
-            raise ValueError("błąd indeksów tablic")
+            print("nieprawidłowy zakres tablicy")
+            sys.exit()
         dec = declaration(
             dataStart = sym.cellCounter,
             dataEnd = sym.cellCounter+p[7]-p[5],

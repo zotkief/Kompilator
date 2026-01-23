@@ -1,6 +1,7 @@
 from ..classes import *
 from .helpers import *
 from ..symbols import *
+import sys
 
 def loadValue(v: value, register: str, prefix: str, instruction_list: List[str]):
     if isinstance(v.val, int):
@@ -16,10 +17,10 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
             name=prefix+name
 
             if name not in globalIdentifierHashMap:
-                raise Exception("niezadeklarowana zmienna:"+name)
+                print("niezadeklarowana zmienna:"+name)
             
             if (not dec.readable):
-                raise ValueError("zmienna nie jest odczytywalna: "+dec.varName)
+                print("zmienna nie jest odczytywalna: "+dec.varName)
 
             constructNumberInH(dec.dataStart,instruction_list)
             instruction_list.append("SWP h")
@@ -33,7 +34,7 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
             instruction_list.append("SWP "+register)
         elif isinstance(curr_id.index,int):
             if (not prefix+curr_id.name in globalIdentifierHashMap):
-                raise ValueError("niezadeklarowana zmienna")
+                print("niezadeklarowana zmienna")
 
             current_index=curr_id.index-dec.indexStart
 
@@ -59,16 +60,16 @@ def loadValue(v: value, register: str, prefix: str, instruction_list: List[str])
                 instruction_list.append("SWP "+register)
         else:
             if (not prefix+curr_id.name in globalIdentifierHashMap):
-                raise ValueError("niezadeklarowana zmienna (tablica)")
+                print("niezadeklarowana zmienna (tablica)")
             if (not prefix+curr_id.index in globalIdentifierHashMap):
-                raise ValueError("niezadeklarowana zmienna (indeks)")
+                print("niezadeklarowana zmienna (indeks)")
             indexDec=globalIdentifierHashMap[prefix+curr_id.index]
             if (indexDec.isTable):
-                raise ValueError("index jest tablicą")
+                print("index jest tablicą")
             if (not dec.readable):
-                raise ValueError("wartość nie jest odczytywalna")
+                print("wartość nie jest odczytywalna")
             if (not indexDec.readable):
-                raise ValueError("indeks nie jest odczytywalny")
+                print("indeks nie jest odczytywalny")
             
 
             if (not dec.isRefrence) and (not indexDec.isRefrence):
@@ -193,7 +194,8 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
             pass
         dec=globalIdentifierHashMap[prefix+curr_id.name]
         if not dec.writable:
-            raise ValueError("zmienna nie nadpisywalna: "+dec.varName)
+            print("zmienna nie nadpisywalna: "+dec.varName)
+            sys.exit()
 
         if dec.isRefrence:
             instruction_list.append("LOAD "+str(dec.dataStart))
@@ -209,7 +211,7 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
         current_index=curr_id.index-dec.indexStart
 
         if not dec.writable:
-            raise ValueError("zmienna nie jest nadpisywalna")
+            print("zmienna nie jest nadpisywalna")
 
         if dec.isRefrence:
             constructNumberInH(dec.dataStart,instruction_list)
@@ -231,16 +233,16 @@ def uploadFromRegister(curr_id : identifier, register : str, prefix: str,instruc
     else:
         dec=globalIdentifierHashMap[prefix+curr_id.name]
         if (not prefix+curr_id.name in globalIdentifierHashMap):
-            raise ValueError("niezadeklarowana zmienna (tablica)")
+            print("niezadeklarowana zmienna (tablica)")
         if (not prefix+curr_id.index in globalIdentifierHashMap):
-            raise ValueError("niezadeklarowana zmienna (indeks)")
+            print("niezadeklarowana zmienna (indeks)")
         indexDec=globalIdentifierHashMap[prefix+curr_id.index]
         if (indexDec.isTable):
-            raise ValueError("index jest tablicą")
+            print("index jest tablicą")
         if (not dec.writable):
-            raise ValueError("wartość nie jest odczytywalna")
+            print("wartość nie jest odczytywalna")
         if (not indexDec.readable):
-            raise ValueError("indeks nie jest odczytywalny: "+indexDec.varName)
+            print("indeks nie jest odczytywalny: "+indexDec.varName)
         
 
         if (not dec.isRefrence) and (not indexDec.isRefrence):
